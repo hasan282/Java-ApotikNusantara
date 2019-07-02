@@ -6,8 +6,9 @@ public class ApotikNusantara {
         // TODO code application logic here
         FormSupplier Fs = new FormSupplier();
         FormObat Fo = new FormObat();
+        MainMenu Mm = new MainMenu();
         
-        Fo.setVisible(true);
+        Mm.setVisible(true);
     }
     
 }

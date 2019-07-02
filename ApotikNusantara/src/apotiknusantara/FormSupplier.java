@@ -4,18 +4,21 @@ import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import net.proteanit.sql.DbUtils;
 
 public class FormSupplier extends javax.swing.JFrame {
 
     Connection Conz;
     String MainDbs = "nusantara";
     DefaultTableModel mdl;
+    boolean thisEdit;
 
     ClassSupplier Sup;
     ArrayList<ClassSupplier> Supplier;
 
     public FormSupplier() {
         initComponents();
+        thisEdit = false;
         DisableInp();
         LoadAndShow();
     }
@@ -39,10 +42,10 @@ public class FormSupplier extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tabelsup = new javax.swing.JTable();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jTextField4 = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        btn_edit = new javax.swing.JButton();
+        search = new javax.swing.JTextField();
+        btn_search = new javax.swing.JButton();
+        btn_cancel = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         btn_add = new javax.swing.JButton();
 
@@ -93,28 +96,22 @@ public class FormSupplier extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(idsupp, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel2))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(namasup, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(notelp, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(idsupp, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(namasup, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(notelp, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
+                        .addGap(0, 25, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,11 +150,26 @@ public class FormSupplier extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(tabelsup);
 
-        jButton3.setText("Edit");
+        btn_edit.setText("Edit");
+        btn_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_editActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("Save");
+        btn_search.setText("Search");
+        btn_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_searchActionPerformed(evt);
+            }
+        });
 
-        jButton5.setText("Search");
+        btn_cancel.setText("Cancel");
+        btn_cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -166,17 +178,17 @@ public class FormSupplier extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jButton3)
+                                .addComponent(btn_edit)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton4))
+                                .addComponent(btn_cancel))
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton5)))
+                                .addComponent(btn_search)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -185,14 +197,14 @@ public class FormSupplier extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5))
+                    .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_search))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(btn_edit)
+                    .addComponent(btn_cancel))
                 .addContainerGap())
         );
 
@@ -219,7 +231,7 @@ public class FormSupplier extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_add)
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -228,10 +240,10 @@ public class FormSupplier extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -256,6 +268,7 @@ public class FormSupplier extends javax.swing.JFrame {
 
     private void DisableInp(){
         idsupp.setEditable(false);
+        btn_cancel.setVisible(false);
     }
 
     private void LoadAndShow(){
@@ -279,16 +292,15 @@ public class FormSupplier extends javax.swing.JFrame {
 
     private void ShowTable(){
         mdl = new DefaultTableModel();
-        Object[] Col = {"ID", "Nama Supplier", "Alamat", "No. Telpon"};
+        Object[] Col = {"Nama Supplier", "Alamat", "No. Telpon"};
         mdl.setColumnIdentifiers(Col);
         tabelsup.setModel(mdl);
         Object[] Rows;
         for (ClassSupplier Supplier1 : Supplier) {
-            Rows = new Object[4];
-            Rows[0] = Integer.toString(Supplier1.getIdSupp());
-            Rows[1] = Supplier1.getNamaSupp();
-            Rows[2] = Supplier1.getAlamat();
-            Rows[3] = Supplier1.getTelpon();
+            Rows = new Object[3];
+            Rows[0] = Supplier1.getNamaSupp();
+            Rows[1] = Supplier1.getAlamat();
+            Rows[2] = Supplier1.getTelpon();
             mdl.addRow(Rows);
         }
     }
@@ -306,6 +318,43 @@ public class FormSupplier extends javax.swing.JFrame {
         }
     }
 
+    private void FillForm(int Row){
+        idsupp.setText(Integer.toString(Supplier.get(Row).getIdSupp()));
+        namasup.setText(Supplier.get(Row).getNamaSupp());
+        alamatsup.setText(Supplier.get(Row).getAlamat());
+        notelp.setText(Supplier.get(Row).getTelpon());
+    }
+
+    private void EditSupplier(){
+        String SqlEdit = "UPDATE supplier SET nama='" +
+                namasup.getText() + "', alamat='" + alamatsup.getText() + "', telpon='" +
+                notelp.getText() + "' WHERE id_supplier=" + idsupp.getText();
+        try{
+            Conz = (Connection) apotiknusantara.Connector.Connect(MainDbs);
+            PreparedStatement Pre = Conz.prepareStatement(SqlEdit);
+            Pre.execute();
+            JOptionPane.showMessageDialog(null,"Data Berhasil Diubah");
+        } catch (SQLException ex){
+            JOptionPane.showMessageDialog(null,ex.toString());
+        }
+    }
+
+    private void SearchData(String Search){
+        String SqlSearch = "SELECT id_supplier AS ID, nama AS 'Nama Supplier', " +
+                "alamat AS Alamat, telpon AS 'No. Telpon' FROM supplier WHERE " +
+                "id_supplier LIKE '%" +
+                Search + "%' OR nama LIKE '%" + Search + "%' OR alamat LIKE '%" +
+                Search + "%' OR telpon LIKE '%" + Search + "%'";
+        try{
+            Conz = (Connection) apotiknusantara.Connector.Connect(MainDbs);
+            Statement st = (Statement) Conz.createStatement();
+            ResultSet rs = st.executeQuery(SqlSearch);
+            tabelsup.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (SQLException ex){
+            JOptionPane.showMessageDialog(null, ex.toString());
+        }
+    }
+
     private void ClearText(){
         idsupp.setText(null);
         namasup.setText(null);
@@ -320,13 +369,54 @@ public class FormSupplier extends javax.swing.JFrame {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         // TODO add your handling code here:
+        if(notelp.getText().equals("") || namasup.getText().equals("") || alamatsup.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Data Supplier Belum Lengkap");
+            return;
+        }
         AddData();
         ClearText();
         LoadAndShow();
     }//GEN-LAST:event_btn_addActionPerformed
 
+    private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
+        // TODO add your handling code here:
+        int SelectRow = tabelsup.getSelectedRow();
+        if(SelectRow >= 0){
+            if(thisEdit == false){
+                FillForm(SelectRow);
+                btn_edit.setText("Save Edit");
+                btn_cancel.setVisible(true);
+                thisEdit = true;
+            } else {
+                EditSupplier();
+                LoadAndShow();
+                btn_edit.setText("Edit");
+                ClearText();
+                btn_cancel.setVisible(false);
+                thisEdit = false;
+            }
+        }
+    }//GEN-LAST:event_btn_editActionPerformed
+
+    private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
+        // TODO add your handling code here:
+        btn_edit.setText("Edit");
+        ClearText();
+        btn_cancel.setVisible(false);
+        thisEdit = false;
+    }//GEN-LAST:event_btn_cancelActionPerformed
+
+    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
+        // TODO add your handling code here:
+        String Src = search.getText();
+        if(Src.equals("")){
+            ShowTable();
+        } else {
+            SearchData(Src);
+        }
+    }//GEN-LAST:event_btn_searchActionPerformed
+
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
@@ -338,33 +428,23 @@ public class FormSupplier extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormSupplier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormSupplier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormSupplier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FormSupplier.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormSupplier().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new FormSupplier().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea alamatsup;
     private javax.swing.JButton btn_add;
+    private javax.swing.JButton btn_cancel;
+    private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_search;
     private javax.swing.JTextField idsupp;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -375,9 +455,9 @@ public class FormSupplier extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField namasup;
     private javax.swing.JTextField notelp;
+    private javax.swing.JTextField search;
     private javax.swing.JTable tabelsup;
     // End of variables declaration//GEN-END:variables
 }
