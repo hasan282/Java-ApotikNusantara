@@ -381,11 +381,12 @@ public class FormSupplier extends javax.swing.JFrame {
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
         int SelectRow = tabelsup.getSelectedRow();
-        if(SelectRow >= 0){
+        if(SelectRow >= 0 && tabelsup.getColumnCount() == 3){
             if(thisEdit == false){
                 FillForm(SelectRow);
                 btn_edit.setText("Save Edit");
                 btn_cancel.setVisible(true);
+                btn_add.setVisible(false);
                 thisEdit = true;
             } else {
                 EditSupplier();
@@ -393,6 +394,7 @@ public class FormSupplier extends javax.swing.JFrame {
                 btn_edit.setText("Edit");
                 ClearText();
                 btn_cancel.setVisible(false);
+                btn_add.setVisible(true);
                 thisEdit = false;
             }
         }
@@ -403,6 +405,7 @@ public class FormSupplier extends javax.swing.JFrame {
         btn_edit.setText("Edit");
         ClearText();
         btn_cancel.setVisible(false);
+        btn_add.setVisible(true);
         thisEdit = false;
     }//GEN-LAST:event_btn_cancelActionPerformed
 

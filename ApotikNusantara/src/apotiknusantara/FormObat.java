@@ -4,12 +4,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import net.proteanit.sql.DbUtils;
 
 public class FormObat extends javax.swing.JFrame {
 
     Connection Conz;
     String MainDbs = "nusantara";
     DefaultTableModel Mod;
+    boolean Editz;
 
     ClassObat Ob;
     ClassSupplier Sup;
@@ -21,6 +23,7 @@ public class FormObat extends javax.swing.JFrame {
         LoadSupplier();
         LoadObat();
         Disabler();
+        Editz = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -47,9 +50,9 @@ public class FormObat extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelob = new javax.swing.JTable();
-        jTextField5 = new javax.swing.JTextField();
+        searcher = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btn_edit = new javax.swing.JButton();
         btn_cancel = new javax.swing.JButton();
         btn_delete = new javax.swing.JButton();
 
@@ -191,10 +194,25 @@ public class FormObat extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tabelob);
 
         jButton3.setText("Search");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("Edit");
+        btn_edit.setText("Edit");
+        btn_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_editActionPerformed(evt);
+            }
+        });
 
         btn_cancel.setText("Cancel");
+        btn_cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cancelActionPerformed(evt);
+            }
+        });
 
         btn_delete.setText("Delete");
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
@@ -214,11 +232,11 @@ public class FormObat extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(searcher, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jButton3))
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jButton4)
+                                .addComponent(btn_edit)
                                 .addGap(18, 18, 18)
                                 .addComponent(btn_cancel)
                                 .addGap(18, 18, 18)
@@ -231,13 +249,13 @@ public class FormObat extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searcher, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton4)
+                    .addComponent(btn_edit)
                     .addComponent(btn_cancel)
                     .addComponent(btn_delete))
                 .addContainerGap())
@@ -373,6 +391,19 @@ public class FormObat extends javax.swing.JFrame {
         suppliers.setSelectedIndex(0);
     }
 
+    private void FillForms(int Row){
+        idobat.setText(Integer.toString(Obat.get(Row).getIdObat()));
+        namaobat.setText(Obat.get(Row).getNamaObat());
+        hargaobat.setText(Integer.toString(Obat.get(Row).getHargaObat()));
+        stoks.setText(Integer.toString(Obat.get(Row).getStok()));
+        kategori.setSelectedItem(Obat.get(Row).getKategori());
+        for(int sp = 0; sp < Supplier.size(); sp++){
+            if(Obat.get(Row).getIdSupp() == Supplier.get(sp).getIdSupp()){
+                suppliers.setSelectedIndex(sp + 1);
+            }
+        }
+    }
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
@@ -428,6 +459,85 @@ public class FormObat extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
 
+    private void EditData(){
+        int SelectIndex = suppliers.getSelectedIndex() - 1;
+        String SqlEdit = "UPDATE obat SET nama='" +
+                namaobat.getText() + "', kategori='" +
+                kategori.getSelectedItem() + "', harga=" +
+                hargaobat.getText() + ", stok=" +
+                stoks.getText() + ", id_supplier=" +
+                Supplier.get(SelectIndex).getIdSupp() + " WHERE id_obat=" +
+                idobat.getText();
+        try{
+            Conz = (Connection) apotiknusantara.Connector.Connect(MainDbs);
+            PreparedStatement Pre = Conz.prepareStatement(SqlEdit);
+            Pre.execute();
+            JOptionPane.showMessageDialog(null,"Data Obat Telah Diubah");
+        } catch (SQLException ex){
+            JOptionPane.showMessageDialog(null,ex.toString());
+        }
+    }
+
+    private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
+        // TODO add your handling code here:
+        int SelectEdit = tabelob.getSelectedRow();
+        if(SelectEdit >= 0 && tabelob.getColumnCount() == 5){
+            if(Editz == false){
+                FillForms(SelectEdit);
+                btn_edit.setText("Save Edit");
+                btn_cancel.setVisible(true);
+                btn_delete.setVisible(false);
+                btn_add.setVisible(false);
+                Editz = true;
+            } else {
+                EditData();
+                LoadObat();
+                ClearText();
+                btn_edit.setText("Edit");
+                btn_cancel.setVisible(false);
+                btn_delete.setVisible(true);
+                btn_add.setVisible(true);
+                Editz = false;
+            }
+        }
+    }//GEN-LAST:event_btn_editActionPerformed
+
+    private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
+        // TODO add your handling code here:
+        ClearText();
+        btn_edit.setText("Edit");
+        btn_cancel.setVisible(false);
+        btn_delete.setVisible(true);
+        btn_add.setVisible(true);
+        Editz = false;
+    }//GEN-LAST:event_btn_cancelActionPerformed
+
+    private void SearchData(String Search){
+        String SqlSearch = "SELECT id_obat AS ID, obat.nama AS 'Nama Obat', kategori " +
+                "AS Kategori, supplier.nama AS Supplier, harga AS Harga, stok AS Stok " +
+                "FROM obat INNER JOIN supplier ON obat.id_supplier = supplier.id_supplier " +
+                "WHERE id_obat LIKE '%" + Search + "%' OR obat.nama LIKE '%" + Search +
+                "%' OR kategori LIKE '%" + Search + "%' OR supplier.nama LIKE '%" + Search + "%'";
+        try{
+            Conz = (Connection) apotiknusantara.Connector.Connect(MainDbs);
+            Statement st = (Statement) Conz.createStatement();
+            ResultSet rs = st.executeQuery(SqlSearch);
+            tabelob.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (SQLException ex){
+            JOptionPane.showMessageDialog(null, ex.toString());
+        }
+    }
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        String Srch = searcher.getText();
+        if(Srch.equals("")){
+            ShowTable();
+        } else {
+            SearchData(Srch);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -454,11 +564,11 @@ public class FormObat extends javax.swing.JFrame {
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_cancel;
     private javax.swing.JButton btn_delete;
+    private javax.swing.JButton btn_edit;
     private javax.swing.JTextField hargaobat;
     private javax.swing.JTextField idobat;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -470,9 +580,9 @@ public class FormObat extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JComboBox kategori;
     private javax.swing.JTextField namaobat;
+    private javax.swing.JTextField searcher;
     private javax.swing.JTextField stoks;
     private javax.swing.JComboBox suppliers;
     private javax.swing.JTable tabelob;
